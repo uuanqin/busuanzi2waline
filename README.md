@@ -73,17 +73,18 @@ python sql_generator.py -gu
 - `site_pv` 表示网站 https://blog.uuanqin.top 的页面浏览量
 - `site_pv` 表示网站 https://blog.uuanqin.top 的独立访客数
 
-> [!NOTE] 脚本每次发出请求时，不蒜子会正常统计访问次数
+> [!NOTE] 
+> 脚本每次发出请求时，不蒜子会正常统计访问次数
 
 如果部分地址请求失败，失败网址将记录在 `out_add_fail.json` 中。
 
 ## 将数据迁移至 Waline
 
 Waline 客户端在开启 [pageview](https://waline.js.org/guide/features/pageview.html) 
-选项时，页面统计量将记入数据库中 wl_Counter 表的 time 字段中。
+选项时，页面统计量将记入数据库中 `wl_Counter` 表的 time 字段中。
 
-但是 wl_Counter 中并不一定包含对应着所有网页的记录，为了后续的数据迁移方便，我们可以利用脚本为
-没在 wl_Counter 中的网址添加一条初始记录。
+但是 `wl_Counter` 中并不一定包含对应着所有网页的记录，为了后续的数据迁移方便，我们可以利用脚本为
+没在 `wl_Counter` 中的网址添加一条初始记录。
 
 ```shell
 python sql_generator.py -gi
@@ -98,6 +99,11 @@ INSERT INTO wl_Counter (url, time) SELECT '/p/e1ee5eca/', 0 WHERE NOT EXISTS (SE
 
 在 [快速开始](#快速开始) 这一小节中，除了 `out_add.json` 生成之外，还额外生成了 `out_add.sql`，
 在数据库中执行这些更新语句，可以在 Waline 原有数据的基础上，**增加** 从不蒜子中获取的数据。
+
+```sql
+UPDATE wl_Counter SET time = IFNULL(time, 0) + 2 WHERE url = '/p/d4bc55f2/';
+UPDATE wl_Counter SET time = IFNULL(time, 0) + 2 WHERE url = '/p/e1ee5eca/';
+```
 
 ## 选项说明
 
