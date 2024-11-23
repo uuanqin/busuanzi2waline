@@ -3,6 +3,7 @@
 本脚本的主要功能有：
 - 根据提供的 sitemap 将不蒜子中存储的数据导出为 JSON 格式
 - 支持通过从不蒜子导出的数据生成对应的 SQL 语句，以将数据更新到 Waline 中
+- 由于每次脚本请求会记入不蒜子的统计量，有特殊需求的用户可以通过构造 sitemap 刷新网站的页面统计量
 
 可调整的参数（详看 [本小节](#选项说明)）：
 - 线程启动的间隔时间
@@ -74,7 +75,7 @@ python sql_generator.py -gu
 - `site_pv` 表示网站 https://blog.uuanqin.top 的独立访客数
 
 > [!NOTE] 
-> 脚本每次发出请求时，不蒜子会正常统计访问次数
+> 脚本每次发出请求时，不蒜子会正常统计访问次数。如果想在某页面刷取一定的访问量，可以在 `sitemap.txt` 重复网址即可。
 
 如果部分地址请求失败，失败网址将记录在 `out_add_fail.json` 中。
 
@@ -113,9 +114,9 @@ UPDATE wl_Counter SET time = IFNULL(time, 0) + 2 WHERE url = '/p/e1ee5eca/';
 python sql_generator.py -gi -gu -de 1 -r 2 -v
 ```
 
-`-gi`、`--gen_ins` 选项指定脚本根据 sitemap.txt 生成相应 SQL，插入 Waline 数据库中不存在对应网址的记录，以为后面的数据导入做准备
+`-gi`、`--gen_ins` 选项指定脚本根据 `sitemap.txt` 生成相应 SQL，插入 Waline 数据库中不存在对应网址的记录，以为后面的数据导入做准备。
 
-`-gu`、`--gen_upd` 选项指定脚本根据 sitemap.txt 获取不蒜子中的数据，并生成相应 SQL 更新 Waline 数据库
+`-gu`、`--gen_upd` 选项指定脚本根据 `sitemap.txt` 获取不蒜子中的数据，并生成相应 SQL 更新 Waline 数据库。
 
 `-r`、`--retry` 指定请求失败时的重试次数，默认 3 次。每次重试都会随机延迟更久的时间。
 
